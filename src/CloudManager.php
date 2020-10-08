@@ -41,6 +41,10 @@ final class CloudManager
 	}
 
 
+	/**
+	 * @param mixed[] $params
+	 * @return mixed[]
+	 */
 	public function callRequest(string $path, array $params = [], string $method = 'GET', ?string $locale = null): array
 	{
 		if ($path === '') {

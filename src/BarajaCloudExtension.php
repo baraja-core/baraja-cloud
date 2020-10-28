@@ -13,7 +13,7 @@ final class BarajaCloudExtension extends CompilerExtension
 	{
 		$builder = $this->getContainerBuilder();
 
-		$builder->addDefinition('barajaCloud.cloudManager')
+		$builder->addDefinition($this->prefix('cloudManager'))
 			->setFactory(CloudManager::class)
 			->setAutowired(CloudManager::class);
 	}

@@ -9,11 +9,9 @@ final class CloudManager
 {
 	public const ENDPOINT_URL = 'https://baraja.cz/api/v1';
 
-	/** @var TokenStorage */
-	private $tokenStorage;
+	private TokenStorage $tokenStorage;
 
-	/** @var string|null */
-	private $token;
+	private ?string $token;
 
 
 	public function __construct(TokenStorage $tokenStorage)

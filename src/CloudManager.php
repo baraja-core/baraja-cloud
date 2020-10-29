@@ -11,7 +11,7 @@ final class CloudManager
 
 	private TokenStorage $tokenStorage;
 
-	private ?string $token;
+	private ?string $token = null;
 
 
 	public function __construct(TokenStorage $tokenStorage)

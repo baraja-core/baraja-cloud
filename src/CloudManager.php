@@ -124,12 +124,15 @@ final class CloudManager
 	private function callByCurl(string $url, string $method, array $body): array
 	{
 		$curl = curl_init($url);
+		if ($curl === false) {
+			throw new \InvalidArgumentException('Can not create cURL connection to URL "' . $url . '".');
+		}
 		curl_setopt($curl, CURLOPT_HEADER, false);
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($curl, CURLOPT_HTTPHEADER, ['Content-type: application/json']);
 		curl_setopt($curl, CURLOPT_POST, true);
 		curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($body));
-		$parsedResponse = $this->jsonDecode($rawResponse = curl_exec($curl));
+		$parsedResponse = $this->jsonDecode($rawResponse = (string) curl_exec($curl));
 		$status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
 		if ((int) $status !== 200) {

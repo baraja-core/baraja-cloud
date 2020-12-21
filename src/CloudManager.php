@@ -85,6 +85,9 @@ final class CloudManager
 
 	public function setToken(string $token): void
 	{
+		if ($this->getToken() === $token) {
+			return;
+		}
 		$this->checkTokenFormat($token = strtolower($token));
 		if (isset($this->callRequest('cloud-status/status', ['token' => $token])['requestLimit']) === false) {
 			throw new \InvalidArgumentException('API token "' . $token . '" does not work. Did you use generated token from Baraja Cloud account?');

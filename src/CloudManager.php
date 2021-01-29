@@ -141,7 +141,7 @@ final class CloudManager
 		if ((int) $status !== 200) {
 			throw new \InvalidArgumentException(
 				'Error: call to URL "' . $url . '", (curl_error: ' . curl_error($curl) . ', curl_errno: ' . curl_errno($curl) . ')'
-				. ' failed with status: ' . $status . "\n\n" . 'Response: ' . $rawResponse
+				. ' failed with status: ' . $status . "\n\n" . 'Response: ' . $rawResponse,
 			);
 		}
 

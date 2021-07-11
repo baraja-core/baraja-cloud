@@ -159,18 +159,27 @@ final class CloudManager
 	 */
 	private function callByFileGetContents(string $url, string $method, array $body): array
 	{
+		$configuration = [
+			'ssl' => [
+				'verify_peer' => false,
+				'verify_peer_name' => false,
+			],
+		];
+
 		if ($method === 'GET') {
-			return $this->jsonDecode(@file_get_contents($url . '?' . http_build_query($body)) ?: '{}');
+			$url .= '?' . http_build_query($body);
+		} else {
+			$configuration += [
+				'http' => [
+					'method' => 'POST',
+					'header' => 'Content-type: application/json',
+					'user_agent' => 'BarajaBot in PHP',
+					'content' => json_encode($body),
+				],
+			];
 		}
 
-		return $this->jsonDecode(@file_get_contents($url, false, stream_context_create([
-			'http' => [
-				'method' => 'POST',
-				'header' => 'Content-type: application/json',
-				'user_agent' => 'BarajaBot in PHP',
-				'content' => json_encode($body),
-			],
-		])) ?: '{}');
+		return $this->jsonDecode(@file_get_contents($url, false, stream_context_create($configuration)) ?: '{}');
 	}
 
 

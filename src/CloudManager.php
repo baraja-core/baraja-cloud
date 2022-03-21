@@ -26,7 +26,7 @@ final class CloudManager
 			return isset($this->callRequest('cloud-status/status')['requestLimit']);
 		} catch (\InvalidArgumentException $e) {
 			throw $e;
-		} catch (\Throwable $e) {
+		} catch (\Throwable) {
 		}
 
 		return false;
@@ -74,8 +74,12 @@ final class CloudManager
 		if ($this->token !== null) {
 			return $this->token;
 		}
-		if (($token = $this->tokenStorage->getToken()) === null) {
-			throw new \LogicException('Token from TokenStorage (service "' . \get_class($this->tokenStorage) . '") is empty. Did you registered this project to Baraja Cloud?');
+		$token = $this->tokenStorage->getToken();
+		if ($token === null) {
+			throw new \LogicException(sprintf(
+				'Token from TokenStorage (service "%s") is empty. Did you registered this project to Baraja Cloud?',
+				$this->tokenStorage::class,
+			));
 		}
 		$this->checkTokenFormat($token);
 
@@ -98,7 +102,6 @@ final class CloudManager
 
 
 	/**
-	 * @param string $haystack
 	 * @return mixed[]
 	 */
 	private function jsonDecode(string $haystack): array
@@ -110,7 +113,7 @@ final class CloudManager
 			throw new \RuntimeException('Haystack is broken: Haystack must be JSON, but HTML code given.');
 		}
 
-		$value = json_decode($haystack, true, 512, JSON_BIGINT_AS_STRING);
+		$value = json_decode($haystack, true, 512, JSON_THROW_ON_ERROR | JSON_BIGINT_AS_STRING);
 
 		if ($error = json_last_error()) {
 			throw new \RuntimeException(json_last_error_msg(), $error);
@@ -134,7 +137,7 @@ final class CloudManager
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($curl, CURLOPT_HTTPHEADER, ['Content-type: application/json']);
 		curl_setopt($curl, CURLOPT_POST, true);
-		curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($body));
+		curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($body, JSON_THROW_ON_ERROR));
 		$parsedResponse = $this->jsonDecode($rawResponse = (string) curl_exec($curl));
 		$status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
@@ -174,7 +177,7 @@ final class CloudManager
 					'method' => 'POST',
 					'header' => 'Content-type: application/json',
 					'user_agent' => 'BarajaBot in PHP',
-					'content' => json_encode($body),
+					'content' => json_encode($body, JSON_THROW_ON_ERROR),
 				],
 			];
 		}
